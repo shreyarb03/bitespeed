@@ -1,0 +1,19 @@
+# Render Blueprint for Bitespeed Identity Reconciliation
+# This file enables one-click deployment to Render
+
+services:
+  - type: web
+    name: bitespeed-identity-service
+    env: node
+    plan: free
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: file:./prisma/prod.db
+      - key: PORT
+        value: 3000
+    autoDeploy: true

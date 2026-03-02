@@ -1,0 +1,259 @@
+{
+  "info": {
+    "name": "Bitespeed Identity Reconciliation API",
+    "description": "Collection for testing the Bitespeed Identity Reconciliation service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Create New Contact",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"alice@example.com\",\n  \"phoneNumber\": \"1234567890\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/identify",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["identify"]
+        },
+        "description": "Creates a new primary contact with email and phone number. This should return a new contact with primaryContactId and empty secondaryContactIds array."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Add New Email to Existing Contact",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"alice.work@example.com\",\n  \"phoneNumber\": \"1234567890\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/identify",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["identify"]
+        },
+        "description": "Adds a new email to an existing contact (matched by phone number). Creates a secondary contact and links it to the primary."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Add New Phone to Existing Contact",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"alice@example.com\",\n  \"phoneNumber\": \"9876543210\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/identify",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["identify"]
+        },
+        "description": "Adds a new phone number to an existing contact (matched by email). Creates a secondary contact and links it to the primary."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Query Existing Contact (Email Only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"alice@example.com\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/identify",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["identify"]
+        },
+        "description": "Queries an existing contact by email only. Should return all consolidated information."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Query Existing Contact (Phone Only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phoneNumber\": \"1234567890\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/identify",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["identify"]
+        },
+        "description": "Queries an existing contact by phone number only. Should return all consolidated information."
+      },
+      "response": []
+    },
+    {
+      "name": "6. Create Second Primary Contact",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"bob@example.com\",\n  \"phoneNumber\": \"5555555555\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/identify",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["identify"]
+        },
+        "description": "Creates a completely separate primary contact (Bob) with different email and phone."
+      },
+      "response": []
+    },
+    {
+      "name": "7. Merge Two Primary Contacts",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"alice@example.com\",\n  \"phoneNumber\": \"5555555555\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/identify",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["identify"]
+        },
+        "description": "Links Alice and Bob by providing Alice's email with Bob's phone. The older contact becomes primary, and all information is consolidated."
+      },
+      "response": []
+    },
+    {
+      "name": "8. Error - Missing Both Fields",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/identify",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["identify"]
+        },
+        "description": "Tests error handling when both email and phoneNumber are missing. Should return 400 Bad Request."
+      },
+      "response": []
+    },
+    {
+      "name": "9. Error - Invalid Data Type",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": 12345,\n  \"phoneNumber\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/identify",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["identify"]
+        },
+        "description": "Tests error handling with invalid data types. Should return 400 Bad Request."
+      },
+      "response": []
+    },
+    {
+      "name": "10. Complex Scenario - Multiple Links",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"alice.personal@example.com\",\n  \"phoneNumber\": \"1111111111\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/identify",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["identify"]
+        },
+        "description": "Adds another email and phone combination to test complex linking scenarios."
+      },
+      "response": []
+    }
+  ]
+}
