@@ -11,11 +11,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "postinstall": "prisma generate",
-    "docker:build": "docker build -t bitespeed-identity .",
-    "docker:run": "docker run -p 3000:3000 bitespeed-identity",
-    "docker:compose": "docker-compose up -d",
-    "docker:compose:down": "docker-compose down"
+    "postinstall": "prisma generate"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -38,6 +34,6 @@
     "@types/node": "^22.10.5",
     "prisma": "^5.22.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3",
+    "typescript": "^5.7.3"
   }
 }
