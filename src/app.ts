@@ -34,6 +34,20 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+// Root endpoint - API information
+app.get('/', (req: Request, res: Response) => {
+  res.json({
+    name: 'Bitespeed Identity Reconciliation API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: 'GET /health',
+      identify: 'POST /identify'
+    },
+    documentation: 'https://github.com/yourusername/bitespeed-identity-reconciliation'
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok' });
