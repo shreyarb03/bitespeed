@@ -11,7 +11,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "deploy": "prisma migrate deploy && npm run build"
   },
   "engines": {
     "node": ">=18.0.0",
