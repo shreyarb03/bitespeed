@@ -1,99 +1,97 @@
-# Bitespeed Identity Reconciliation Service
+# Bitespeed Identity Reconciliation API
 
-A backend service for reconciling customer identities across multiple contact methods (email and phone number).
+A robust identity reconciliation service that links customer contacts across multiple purchases using email and phone number matching. Built with Node.js, Express, TypeScript, and Prisma ORM.
 
-## 🚀 Quick Links
+## 🚀 Live Demo
 
-- **[Quick Deploy Guide](QUICK_DEPLOY.md)** - Deploy in 5 minutes
-- **[Full Deployment Guide](DEPLOYMENT_GUIDE.md)** - Detailed deployment instructions
-- **[Testing Guide](TESTING.md)** - How to test the API
-- **[Postman Guide](POSTMAN_GUIDE.md)** - Test with Postman
-- **[Custom Testing](CUSTOM_TESTING_GUIDE.md)** - Create your own test cases
+**API Base URL:** https://bitespeed-7ke0.onrender.com/
 
-## ✨ Features
+**Endpoints:**
+- `GET /` - API information
+- `GET /health` - Health check
+- `POST /identify` - Identity reconciliation endpoint
 
-- ✅ Identity reconciliation across email and phone numbers
-- ✅ Automatic primary contact merging
-- ✅ Secondary contact linking
-- ✅ RESTful API
-- ✅ Type-safe with TypeScript
-- ✅ Comprehensive test coverage
-- ✅ Production-ready
+## 📋 Overview
 
-## Setup
+This service helps e-commerce platforms identify and consolidate customer information across multiple orders. When a customer makes purchases using different email addresses or phone numbers, the system intelligently links these contacts together, maintaining a primary contact and associating secondary contacts.
 
-1. Install dependencies:
+### Key Features
+
+- **Smart Contact Linking**: Automatically links contacts with matching email or phone numbers
+- **Primary/Secondary Hierarchy**: Maintains a clear hierarchy of contact relationships
+- **Conflict Resolution**: Handles complex scenarios where multiple primary contacts need to be merged
+- **RESTful API**: Simple JSON-based API for easy integration
+- **PostgreSQL Database**: Reliable data persistence with Prisma ORM
+- **Type-Safe**: Built with TypeScript for enhanced code quality
+
+## 🛠️ Tech Stack
+
+- **Runtime**: Node.js 
+- **Framework**: Express.js
+- **Language**: TypeScript
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Deployment**: Render
+
+## 📦 Installation
+
+### Prerequisites
+
+- Node.js 18 or higher
+- npm 9 or higher
+- PostgreSQL database
+
+### Local Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/shreyarb03/bitespeed.git
+cd bitespeed
+```
+
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Generate Prisma client:
-```bash
-npm run prisma:generate
-```
-
-3. Run database migrations:
-```bash
-npm run prisma:migrate
-```
-
-## Development
-
-Start the development server:
-```bash
-npm run dev
-```
-
-## Testing
-
-Run tests:
-```bash
-npm test
-```
-
-Run tests in watch mode:
-```bash
-npm run test:watch
-```
-
-## Environment Variables
-
-The application requires environment variables to be configured. Copy `.env.example` to `.env` and configure the values:
-
+3. Set up environment variables:
 ```bash
 cp .env.example .env
 ```
 
-### Required Variables
-
-- **DATABASE_URL** (required): Database connection string
-  - SQLite format: `file:./path/to/database.db`
-  - PostgreSQL format: `postgresql://user:password@localhost:5432/dbname`
-  - MySQL format: `mysql://user:password@localhost:3306/dbname`
-
-### Optional Variables
-
-- **PORT** (optional, default: 3000): The port number on which the server will listen
-- **NODE_ENV** (optional, default: development): The environment mode (development, production, test)
-
-### Example Configuration
-
+Edit `.env` and configure your database:
 ```env
-DATABASE_URL="file:./prisma/dev.db"
+DATABASE_URL="postgresql://user:password@localhost:5432/bitespeed"
 PORT=3000
 NODE_ENV=development
 ```
 
-## API
+4. Run database migrations:
+```bash
+npx prisma migrate deploy
+npx prisma generate
+```
+
+5. Start the development server:
+```bash
+npm run dev
+```
+
+The API will be available at `http://localhost:3000`
+
+## 🔌 API Usage
 
 ### POST /identify
 
-Reconcile customer identity based on email and/or phone number.
+Identifies and consolidates customer contact information.
 
 **Request:**
 ```json
+POST /identify
+Content-Type: application/json
+
 {
-  "email": "example@email.com",
+  "email": "customer@example.com",
   "phoneNumber": "1234567890"
 }
 ```
@@ -103,100 +101,207 @@ Reconcile customer identity based on email and/or phone number.
 {
   "contact": {
     "primaryContactId": 1,
-    "emails": ["example@email.com"],
-    "phoneNumbers": ["1234567890"],
-    "secondaryContactIds": []
+    "emails": ["customer@example.com", "alternate@example.com"],
+    "phoneNumbers": ["1234567890", "0987654321"],
+    "secondaryContactIds": [2, 3]
   }
 }
 ```
 
-## Tech Stack
+### Example Scenarios
 
-- Node.js with TypeScript
-- Express.js
-- Prisma ORM
-- SQLite (development) / PostgreSQL (production)
-- Vitest (testing)
-- fast-check (property-based testing)
-
-## 🚀 Deployment
-
-### Quick Deploy Options:
-
-1. **Render** (Easiest - Free tier available)
-   ```bash
-   # See QUICK_DEPLOY.md for one-click deploy
-   ```
-
-2. **Railway** (Fast - PostgreSQL included)
-   ```bash
-   npm i -g @railway/cli
-   railway login
-   railway init
-   railway up
-   ```
-
-3. **Docker** (Local or any cloud)
-   ```bash
-   docker-compose up -d
-   ```
-
-See [QUICK_DEPLOY.md](QUICK_DEPLOY.md) for detailed instructions.
-
-## 📖 Documentation
-
-- **[Requirements](/.kiro/specs/bitespeed-identity-reconciliation/requirements.md)** - Detailed requirements
-- **[Design Document](/.kiro/specs/bitespeed-identity-reconciliation/design.md)** - Architecture and design
-- **[Tasks](/.kiro/specs/bitespeed-identity-reconciliation/tasks.md)** - Implementation tasks
-
-## 🧪 Testing
-
-### Run Automated Tests
+**Scenario 1: New Contact**
 ```bash
-npm test
+curl -X POST https://bitespeed-7ke0.onrender.com/identify \
+  -H "Content-Type: application/json" \
+  -d '{"email":"new@example.com","phoneNumber":"1111111111"}'
 ```
 
-### Interactive Testing
+**Scenario 2: Linking Contacts**
 ```bash
-# Start server
-npm start
+# First request creates primary contact
+curl -X POST https://bitespeed-7ke0.onrender.com/identify \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","phoneNumber":"1234567890"}'
 
-# In another terminal, use the test helper
-./test-helper.sh
+# Second request with new email links to existing phone
+curl -X POST https://bitespeed-7ke0.onrender.com/identify \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user2@example.com","phoneNumber":"1234567890"}'
 ```
 
-### Test with Postman
-1. Import `Bitespeed_Identity_API.postman_collection.json`
-2. Follow the [Postman Guide](POSTMAN_GUIDE.md)
+## 🧪 Testing with Postman
 
-## 📊 Project Structure
+### Quick Start
+
+1. **Import the Collection**
+   - Download [Bitespeed_Identity_API.postman_collection.json](./Bitespeed_Identity_API.postman_collection.json)
+   - Open Postman → Import → Select the file
+
+2. **Set Up Environment**
+   - Create a new environment called "Production"
+   - Add variable: `base_url` = `https://bitespeed-7ke0.onrender.com`
+   - Select "Production" environment
+
+3. **Run Tests**
+   - Test 1: Create New Contact
+   - Test 2: Add New Email to Existing Contact
+   - Test 3: Add New Phone to Existing Contact
+   - Test 4: Query Existing Contact (Email Only)
+   - Test 5: Query Existing Contact (Phone Only)
+   - Test 6: Create Second Primary Contact
+   - Test 7: Merge Two Primary Contacts
+   - Test 8: Complex Scenario - Multiple Links
+
+### Sample Test Cases
+
+**Test 1: Create New Contact**
+```json
+POST {{base_url}}/identify
+{
+  "email": "alice@example.com",
+  "phoneNumber": "1234567890"
+}
+```
+
+**Test 2: Link with New Email**
+```json
+POST {{base_url}}/identify
+{
+  "email": "alice.work@example.com",
+  "phoneNumber": "1234567890"
+}
+```
+
+**Test 3: Merge Primary Contacts**
+```json
+POST {{base_url}}/identify
+{
+  "email": "alice@example.com",
+  "phoneNumber": "9876543210"
+}
+```
+
+## 🏗️ Project Structure
 
 ```
-.
+bitespeed/
 ├── src/
-│   ├── controllers/     # HTTP request handlers
-│   ├── services/        # Business logic
-│   ├── repositories/    # Database access
-│   ├── types/          # TypeScript types
-│   ├── app.ts          # Express app setup
-│   ├── config.ts       # Configuration
-│   └── index.ts        # Entry point
+│   ├── app.ts                    # Express app configuration
+│   ├── index.ts                  # Server entry point
+│   ├── config.ts                 # Environment configuration
+│   ├── controllers/
+│   │   └── IdentityController.ts # Request handlers
+│   ├── services/
+│   │   └── IdentityService.ts    # Business logic
+│   ├── repositories/
+│   │   └── ContactRepository.ts  # Database operations
+│   └── types/
+│       └── contact.ts            # TypeScript types
 ├── prisma/
-│   ├── schema.prisma   # Database schema
-│   └── migrations/     # Database migrations
-├── tests/              # Test files
-└── docs/              # Documentation
+│   ├── schema.prisma             # Database schema
+│   └── migrations/               # Database migrations
+├── package.json
+├── tsconfig.json
+└── README.md
+```
 
+## 🚢 Deployment
+
+The application is deployed on Render with automatic deployments from the main branch.
+
+### Deploy Your Own
+
+1. Fork this repository
+2. Create a new Web Service on [Render](https://render.com)
+3. Connect your GitHub repository
+4. Create a PostgreSQL database on Render
+5. Set environment variables:
+   - `DATABASE_URL`: Your PostgreSQL connection string
+   - `NODE_ENV`: `production`
+   - `PORT`: `3000`
+6. Deploy!
+
+## 📊 Database Schema
+
+```prisma
+model Contact {
+  id              Int       @id @default(autoincrement())
+  phoneNumber     String?
+  email           String?
+  linkedId        Int?
+  linkPrecedence  String    // "primary" or "secondary"
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+  
+  linkedContact   Contact?  @relation("ContactLinks", fields: [linkedId], references: [id])
+  linkedContacts  Contact[] @relation("ContactLinks")
+}
+```
+
+## 🔒 Error Handling
+
+The API returns appropriate HTTP status codes:
+
+- `200 OK`: Successful request
+- `400 Bad Request`: Invalid input (missing email and phone)
+- `500 Internal Server Error`: Server-side error
+
+**Error Response Format:**
+```json
+{
+  "error": "Error message description"
+}
+```
+
+## 🧩 Business Logic
+
+### Contact Linking Rules
+
+1. **New Contact**: If no matching email or phone exists, create a new primary contact
+2. **Single Match**: If one contact matches, create a secondary contact linked to it
+3. **Multiple Matches**: If multiple contacts match:
+   - Keep the oldest as primary
+   - Convert others to secondary
+   - Link all to the primary contact
+
+### Edge Cases Handled
+
+- Duplicate requests (idempotent)
+- Null email or phone number
+- Multiple primary contacts with same information
+- Circular reference prevention
+- Transaction rollback on errors
+
+## 📝 Scripts
+
+```bash
+npm run dev              # Start development server
+npm run build            # Build for production
+npm start                # Start production server
+npm run prisma:generate  # Generate Prisma client
+npm run prisma:migrate   # Run migrations (dev)
+npm run prisma:studio    # Open Prisma Studio
 ```
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests: `npm test`
-5. Submit a pull request
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📝 License
+## 📄 License
 
-MIT
+This project is licensed under the MIT License.
+
+## 👤 Author
+
+Shreya - [GitHub](https://github.com/shreyarb03)
+
+## 🙏 Acknowledgments
+
+- Built for the Bitespeed Backend Task
+- Inspired by real-world e-commerce identity reconciliation challenges
+
+---
+
+**Note:** The free tier on Render may spin down after inactivity. The first request after idle time may take 30-60 seconds to respond while the service wakes up.
